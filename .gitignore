@@ -19,3 +19,6 @@ venv/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# Temporary Files:
+test.py
