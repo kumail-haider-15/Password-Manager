@@ -1,40 +1,46 @@
-import streamlit as st
-import re
+from dotenv import load_dotenv
+from flask import Flask, render_template, request, flash, redirect, url_for
+import os
+
+load_dotenv()
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 
-def is_strong_password(pw):
-    if len(pw) < 8:
-        return False, "Password must be at least 8 characters long."
-    if not re.search(r"[A-Z]", pw):
-        return False, "Password must contain at least one uppercase letter."
-    if not re.search(r"[a-z]", pw):
-        return False, "Password must contain at least one lowercase letter."
-    if not re.search(r"[0-9]", pw):
-        return False, "Password must contain at least one number"
-    if not re.search(r"[!@#$%^&*]", pw):
-        return False, "Need at least one special character (!@#$%^&*)."
-    return True, "Strong password!"
+@app.route('/')
+def home():
+    return render_template('index.html')
 
 
-st.title("🔐 Password Manager")
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    return render_template('login.html')
 
-website = st.text_input("Website")
-email = st.text_input("Email")
-password = st.text_input("Password", type="password")
 
-strong, message = is_strong_password(password)
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        if name and email and password and confirm_password:
+            if '@' in email and '.' in email:
+                if password == confirm_password:
+                    print("Registration successful!")
+                else:
+                    flash("Passwords do not match.")
+                    return render_template('register.html', username=name, email=email)
+            else:
+                flash("Invalid email address.")
+                return render_template('register.html', username=name, email=email)
+        else:
+            flash("All fields are required.")
+            return render_template('register.html', username=name, email=email)
 
-if password:
-    if strong:
-        st.success(message)
-    else:
-        st.warning(message)
+    return render_template('register.html')
 
-if st.button("Submit"):
-    if not website or not email or not password:
-        st.error("Fill all fields first.")
-    elif not strong:
-        st.error("Fix your password before submitting.")
-    else:
-        print(f"Website: {website}\nEmail: {email}\nPassword: {password}")
-        st.success("Saved!")
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5001)
