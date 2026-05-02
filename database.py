@@ -43,4 +43,12 @@ class Password(Base):
 Base.metadata.create_all(engine)
 
 with Session(engine) as session:
-    pass
+    def add_user(name: str, email: str, password: str):
+        user = User(name=name, email=email, password=password)
+        session.add(user)
+        session.commit()
+        print(f"User '{name}' added successfully.")
+
+
+    def user_exists(email: str):
+        return session.query(User).filter_by(email=email).first() is not None

@@ -1,3 +1,6 @@
+flask-login
+argon2
+werkzeug
 sqlalchemy
 python-dotenv
 flask
