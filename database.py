@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, String, Integer, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
+from flask_login import UserMixin
 
 
 # ─── Base ───────────────────────────────────────────────
@@ -12,7 +13,7 @@ engine = create_engine("sqlite:///myapp.db", echo=False)
 
 
 # ─── Users Table ────────────────────────────────────────
-class User(Base):
+class User(UserMixin, Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -42,13 +43,27 @@ class Password(Base):
 # ─── Create Tables ───────────────────────────────────────
 Base.metadata.create_all(engine)
 
-with Session(engine) as session:
-    def add_user(name: str, email: str, password: str):
-        user = User(name=name, email=email, password=password)
+
+def add_user(user: object):
+    with Session(engine) as session:
         session.add(user)
         session.commit()
-        print(f"User '{name}' added successfully.")
 
 
-    def user_exists(email: str):
-        return session.query(User).filter_by(email=email).first() is not None
+def user_exists(email: str):
+    with Session(engine) as session:
+        user = session.query(User).filter_by(email=email).first()
+        if user:
+            return True, user
+        return False, user
+
+
+def return_password(email: str):
+    with Session(engine) as session:
+        user = session.query(User).filter_by(email=email).first()
+        return user.password
+
+
+def load_user(user_id: int):
+    with Session(engine) as session:
+        return session.query(User).filter_by(id=user_id).first()
