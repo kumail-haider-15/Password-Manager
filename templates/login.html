@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
     <title>Login</title>
 </head>
-
+<script src="{{ url_for('static', filename='JS/script.js') }}"></script>
 <body>
 <h1>Login</h1>
 
@@ -21,12 +21,17 @@
 
 <form action="{{ url_for('login') }}" method="post">
     <input type="email" placeholder="Enter email" name="email" value="{{ email or '' }}"><br>
-    <input type="password" placeholder="Enter password" name="password"><br>
+
+    <!-- Added wrapper and toggle button -->
+    <div class="password-wrapper">
+        <input type="password" class="password" name="password" placeholder="Enter password">
+        <button type="button" class="toggle-password">👁</button>
+    </div>
+
     <button type="submit">Submit</button>
     <br>
     <a href="{{ url_for('register') }}">Don't have an account? Register here</a>
 </form>
-
 
 </body>
 

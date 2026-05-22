@@ -1,6 +1,8 @@
+cryptography
+sqlalchemy
+flask-sqlalchemy
 flask-login
 argon2-cffi
 werkzeug
-sqlalchemy
 python-dotenv
 flask

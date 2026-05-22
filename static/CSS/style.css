@@ -47,6 +47,7 @@ th {
 }
 
 table {
+    margin-top: 20px;
     width: 85%;
     border-collapse: collapse;
 }
@@ -70,4 +71,30 @@ table {
     background-color: #ffcccc;
     color: red;
     border: 1px solid red;
+}
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 40px; /* Space for the icon */
+    margin-bottom: 10px;
+}
+
+.password-wrapper button {
+    position: absolute;
+    right: 10px;
+    top: 35%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: auto;
+    padding: 0;
+    color: black; /* Ensure visibility */
+    margin-bottom: 0; /* Override your general button margin */
 }

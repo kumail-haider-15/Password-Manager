@@ -1,6 +1,7 @@
-from sqlalchemy import create_engine, String, Integer, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
 from flask_login import UserMixin
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import Integer, String
 
 
 # ─── Base ───────────────────────────────────────────────
@@ -8,8 +9,7 @@ class Base(DeclarativeBase):
     pass
 
 
-# ─── Engine ─────────────────────────────────────────────
-engine = create_engine("sqlite:///myapp.db", echo=False)
+db = SQLAlchemy(model_class=Base)
 
 
 # ─── Users Table ────────────────────────────────────────
@@ -31,39 +31,29 @@ class Password(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     website: Mapped[str] = mapped_column(String(255), nullable=False)
-    email: Mapped[str] = mapped_column(String(255), nullable=False)
+    email_or_username: Mapped[str] = mapped_column(String(255), nullable=False)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     # Foreign key
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, db.ForeignKey('users.id'), nullable=False)
 
     # Relationship
     user: Mapped["User"] = relationship(back_populates="passwords")
 
 
-# ─── Create Tables ───────────────────────────────────────
-Base.metadata.create_all(engine)
-
-
 def add_user(user: object):
-    with Session(engine) as session:
-        session.add(user)
-        session.commit()
+    db.session.add(user)
+    db.session.commit()
 
 
 def user_exists(email: str):
-    with Session(engine) as session:
-        user = session.query(User).filter_by(email=email).first()
-        if user:
-            return True, user
-        return False, user
+    user = db.session.execute(db.select(User).filter_by(email=email)).scalar()
+    if user:
+        return True, user
+    return False, None
 
 
 def return_password(email: str):
-    with Session(engine) as session:
-        user = session.query(User).filter_by(email=email).first()
+    user = db.session.execute(db.select(User).filter_by(email=email)).scalar()
+    if user:
         return user.password
-
-
-def load_user(user_id: int):
-    with Session(engine) as session:
-        return session.query(User).filter_by(id=user_id).first()
+    return None
