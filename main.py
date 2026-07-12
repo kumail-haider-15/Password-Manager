@@ -18,11 +18,6 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=10)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# Configure Flask-Login to handle the redirect message elegantly
-login_manager.login_view = "login"  # Tells it where your login route is
-login_manager.login_message = "Your session has expired due to inactivity. Please log in again."
-login_manager.login_message_category = "info"
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -34,25 +29,6 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
-
-
-@app.before_request
-def refresh_session_lifetime():
-    # This flags the current session to update its expiration
-    # date right now, shifting the 15-minute window forward.
-    session.permanent = True
-
-
-@app.route('/auth/ping', methods=['POST'])
-def session_ping():
-    # Returning an empty string with a 204 status code tells the JavaScript fetch API
-    # "Success, no content to display." Flask consumes this and stops.
-    return '', 204
-
-
-@app.route('/js-error')
-def js_error():
-    return "<h1>JavaScript is Required</h1><p>This password manager requires JavaScript to securely manage your vault sessions.</p>"
 
 
 @app.route('/')
@@ -71,7 +47,6 @@ def login():
                 if exists:
                     saved_hashed_password = return_password(email=email)
                     if verify_password(stored_hash=saved_hashed_password, plain_text=password):
-                        session.permanent = True
                         login_user(user=user)
                         return redirect(url_for('dashboard'))
                     else:
@@ -117,7 +92,6 @@ def register():
                             hashed_password = hash_password(plain_text=password)
                             new_user = User(name=name, email=email, password=hashed_password)
                             add_user(user=new_user)
-                            session.permanent = True
                             login_user(user=new_user)
                             print("Registration successful!")
                             return redirect(url_for('dashboard'))
