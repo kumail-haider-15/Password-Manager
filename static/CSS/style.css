@@ -1,15 +1,17 @@
 body {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     font-family: Arial, Helvetica, sans-serif;
     flex-direction: column;
     background-color: aliceblue;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 form {
-    width: 300px;
+    width: 350px;
     padding: 20px;
     background-color: lightgray;
     border-radius: 5px;
@@ -24,34 +26,6 @@ input {
     margin-bottom: 10px;
 }
 
-button {
-    background-color: darkblue;
-    color: white;
-    padding: 10px;
-    border: 1px solid black;
-    border-radius: 5px;
-    width: 100%;
-    cursor: pointer;
-    margin-bottom: 10px;
-}
-
-th,
-td {
-    border: 1px solid black;
-    padding: 15px;
-}
-
-th {
-    background-color: black;
-    color: white;
-}
-
-table {
-    margin-top: 20px;
-    width: 85%;
-    border-collapse: collapse;
-}
-
 .btn {
     display: inline-block;
     padding: 10px 20px;
@@ -59,6 +33,17 @@ table {
     color: white;
     text-decoration: none;
     border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: darkblue;
+    color: white;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 100%;
     cursor: pointer;
     margin-bottom: 10px;
 }
@@ -72,6 +57,7 @@ table {
     color: red;
     border: 1px solid red;
 }
+
 .password-wrapper {
     position: relative;
     display: flex;
@@ -97,4 +83,128 @@ table {
     padding: 0;
     color: black; /* Ensure visibility */
     margin-bottom: 0; /* Override your general button margin */
+}
+
+.entry-grid {
+    width: 300px;
+    margin-top: 10px;
+}
+
+.entry-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: lightgray;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 12px 14px;
+    text-decoration: none;
+    color: black;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.entry-card:hover {
+    background-color: #c9c9c9;
+}
+
+.entry-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 5px;
+    background-color: darkblue;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.entry-info { flex: 1; }
+.entry-info h3 { margin: 0; font-size: 1rem; }
+
+.entry-arrow { color: black; }
+
+/* -------------------------------
+   View Password Page
+--------------------------------*/
+
+.back-btn{
+    margin-bottom:20px;
+}
+
+.view-card{
+    width:350px;
+    background:lightgray;
+    border-radius:5px;
+    border:1px solid black;
+    padding:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,.1);
+    margin-bottom:20px;
+}
+
+.view-row{
+    margin-bottom:20px;
+}
+
+.view-row:last-child{
+    margin-bottom:0;
+}
+
+.view-row label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.view-value{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.view-value span{
+    flex:1;
+    background:white;
+    border:1px solid black;
+    padding:8px;
+    border-radius:4px;
+    overflow-wrap:anywhere;
+    min-height:20px;
+}
+
+.icon-btn{
+    width:38px;
+    height:38px;
+    padding:0;
+    margin:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    background:darkblue;
+    color:white;
+    border:1px solid black;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.icon-btn:hover{
+    opacity:.9;
+}
+
+.btn-danger{
+    width:350px;
+    background:#c62828;
+    color:white;
+    border:none;
+    padding:12px;
+    border-radius:5px;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+.btn-danger:hover{
+    background:#a91f1f;
 }
