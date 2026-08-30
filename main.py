@@ -2,17 +2,32 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, LoginManager, current_user, logout_user, login_required
 import os
-from database import user_exists, add_user, return_password, User, db, Password
+from database import user_exists, add_user, return_password, User, db, Password, is_verified
 from password_handling import check_password
 from password_hashing import hash_password, verify_password
 from password_encryption import encrypt_password, decrypt_password
 from sqlalchemy import select
-from datetime import timedelta
+from flask_mail import Mail
+from verify_email import send_verification_email
+from itsdangerous import URLSafeTimedSerializer
+from datetime import datetime
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+
+# Email Config
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.getenv('MY_EMAIL')
+app.config['MAIL_PASSWORD'] = os.getenv('PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MY_EMAIL')
+
+mail = Mail(app)
+s = URLSafeTimedSerializer(app.secret_key)
+
 
 # Configure Flask-Login
 login_manager = LoginManager()
@@ -89,15 +104,29 @@ def register():
                 if strong:
                     if password == confirm_password:
                         if not exists:
-                            hashed_password = hash_password(plain_text=password)
-                            new_user = User(name=name, email=email, password=hashed_password)
-                            add_user(user=new_user)
-                            login_user(user=new_user)
-                            print("Registration successful!")
-                            return redirect(url_for('dashboard'))
+                            add_user(email=email, name=name, password=hash_password(password), date_time=datetime.now())
+
+                            send_verification_email(email=email, s=s, mail=mail)
+                            return "We have send you an email, check your inbox and verify your email"
+
+                        elif not is_verified(email=email):
+                            add_user(email=email, name=name, password=hash_password(password), date_time=datetime.now())
+                            user = db.session.execute(db.select(User).filter_by(email=email)).scalar()
+
+                            difference = datetime.now() - user.date_time
+                            # for hour, it is 0, for minute it is 1 and for seconds it is 2
+                            difference = str(difference).split(':')[1]
+
+                            if int(difference) >= 30:
+                                send_verification_email(email=email, s=s, mail=mail)
+                                user.date_time = datetime.now()
+                                db.session.commit()
+                            return "We have send you an email, check your inbox and verify your email"
+
                         else:
                             flash("This email already exists. Login instead.")
                             return render_template('register.html', username=name, email=email)
+
                     else:
                         flash("Passwords do not match.")
                         return render_template('register.html', username=name, email=email)
@@ -112,6 +141,22 @@ def register():
             return render_template('register.html', username=name, email=email)
 
     return render_template('register.html')
+
+
+@app.route('/verify/<token>')
+def verify_email(token):
+    try:
+        email = s.loads(token, salt='email-verify', max_age=1800)
+    except:
+        return 'Link is invalid or expired'
+
+    user = db.session.execute(db.select(User).filter_by(email=email)).scalar()
+    user.is_verified = True
+    db.session.commit()
+    login_user(user=user)
+    print("Registration successful!")
+
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/dashboard')
