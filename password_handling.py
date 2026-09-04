@@ -4,7 +4,7 @@ from secrets import choice, randbelow, SystemRandom
 PASSWORD_LENGTH = 16
 
 
-def check_password(pw):
+def check_password_strength(pw):
     msg = ''
     # Reject non-ASCII entirely at the top of your function
     if not pw.isascii():

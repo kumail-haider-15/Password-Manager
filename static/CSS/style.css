@@ -208,3 +208,8 @@ button {
 .btn-danger:hover{
     background:#a91f1f;
 }
+.forget-password{
+    display: block;
+    margin-bottom:10px;
+    font-size:14px;
+}

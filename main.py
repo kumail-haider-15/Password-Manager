@@ -2,14 +2,17 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, LoginManager, current_user, logout_user, login_required
 import os
+
+from tenacity import retry_if_exception
+
 from database import user_exists, add_user, return_password, User, db, Password, is_verified
-from password_handling import check_password
+from password_handling import check_password_strength
 from password_hashing import hash_password, verify_password
 from password_encryption import encrypt_password, decrypt_password
 from sqlalchemy import select
 from flask_mail import Mail
-from verify_email import send_verification_email
-from itsdangerous import URLSafeTimedSerializer
+from verify_email import send_verification_email, send_reset_password_email
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from datetime import datetime
 
 load_dotenv()
@@ -96,7 +99,7 @@ def register():
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
 
-        strong, message = check_password(pw=password)
+        strong, message = check_password_strength(pw=password)
         exists, user = user_exists(email=email)
 
         if name and email and password and confirm_password:
@@ -147,8 +150,12 @@ def register():
 def verify_email(token):
     try:
         email = s.loads(token, salt='email-verify', max_age=1800)
-    except:
-        return 'Link is invalid or expired'
+
+    except SignatureExpired:
+        return "This reset link has expired."
+
+    except BadSignature:
+        return "This reset link is invalid."
 
     user = db.session.execute(db.select(User).filter_by(email=email)).scalar()
     user.is_verified = True
@@ -239,6 +246,61 @@ def delete_password(password_id):
         return redirect(url_for('password_view', website_name=password.website))
     else:
         return redirect(url_for('dashboard'))
+
+
+@app.route('/forget_password', methods=['GET', 'POST'])
+def forget_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        if not email:
+            flash("Please enter email")
+        elif '@' not in email and '.' not in email:
+            flash("Enter valid email address")
+        elif email:
+            user = db.session.execute(db.select(User).filter_by(email=email)).scalar()
+            if user:
+                send_reset_password_email(email=email, s=s, mail=mail)
+                return "A password reset link has been sent to your email."
+            else:
+                flash("This email does not exists")
+
+    return render_template('forget_password.html')
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        email = s.loads(token, salt='password-reset', max_age=1800)
+    except SignatureExpired:
+        return "This reset link has expired."
+
+    except BadSignature:
+        return "This reset link is invalid."
+
+    user = db.session.execute(db.select(User).filter_by(email=email)).scalar()
+
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        strong, message = check_password_strength(pw=password)
+        if password and confirm_password:
+            if strong:
+                if password == confirm_password:
+                    user.password = hash_password(plain_text=password)
+                    db.session.commit()
+                    login_url = url_for('login')
+
+                    return f'Password reset successfully, login now <a href="{login_url}">Login</a>'
+
+                else:
+                    flash('Passwords do not match')
+            else:
+                flash(message)
+        else:
+            flash("Please fill all the fields")
+
+    return render_template('reset_password.html')
 
 
 if __name__ == "__main__":
