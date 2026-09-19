@@ -40,7 +40,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const row = this.closest(".view-row");
             const password = row.querySelector(".password-text");
 
-            if (password.textContent === "••••••••") {
+            // Use trimmed textContent to avoid mismatches caused by
+            // whitespace/newlines in the template markup. The initial
+            // indentation in the HTML can make password.textContent
+            // contain extra spaces so a direct equality check fails
+            // on the first click.
+            const current = password.textContent.trim();
+
+            if (current === "••••••••") {
 
                 password.textContent = password.dataset.password;
                 this.textContent = "🙈";

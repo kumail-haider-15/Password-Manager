@@ -2,9 +2,6 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, LoginManager, current_user, logout_user, login_required
 import os
-
-from tenacity import retry_if_exception
-
 from database import user_exists, add_user, return_password, User, db, Password, is_verified
 from password_handling import check_password_strength
 from password_hashing import hash_password, verify_password
@@ -13,12 +10,24 @@ from sqlalchemy import select
 from flask_mail import Mail
 from verify_email import send_verification_email, send_reset_password_email
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
-from datetime import datetime
+from datetime import datetime, timedelta
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+
+# in minutes
+SESSION_TIMEOUT_TIMEPERIOD = 1
+
+# Prevent JavaScript from reading the session cookie
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+
+# Prevent cross-site requests from freely sending the cookie
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# Enable this when your deployed website uses HTTPS
+app.config['SESSION_COOKIE_SECURE'] = False
 
 # Email Config
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -47,6 +56,30 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
+
+
+@app.before_request
+def check_session_timeout():
+    if current_user.is_authenticated:
+
+        last_activity = session.get('last_activity')
+
+        if last_activity:
+
+            last_activity = datetime.fromisoformat(last_activity)
+
+            inactive_time = datetime.now() - last_activity
+
+            if inactive_time > timedelta(minutes=SESSION_TIMEOUT_TIMEPERIOD):
+                logout_user()
+                session.clear()
+
+                login_url = url_for('login')
+
+                return f'Your session has expired due to inactivity, login to continue <a href="{login_url}">Login</a>'
+
+        session['last_activity'] = datetime.now().isoformat()
+    return None
 
 
 @app.route('/')
@@ -87,12 +120,12 @@ def login():
 @login_required
 def logout():
     logout_user()
+    session.clear()
     return redirect(url_for('home'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # TODO Verify email later
     if request.method == 'POST':
         name = request.form.get('username')
         email = request.form.get('email')
