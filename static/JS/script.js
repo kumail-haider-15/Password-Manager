@@ -33,35 +33,46 @@ document.addEventListener("DOMContentLoaded", function () {
        View Password Toggle
     ========================================== */
 
-    document.querySelectorAll(".toggle-view-password").forEach(function (button) {
+document.querySelectorAll(".toggle-view-password").forEach(function (button) {
 
-        button.addEventListener("click", function () {
+    let hideTimer;
 
-            const row = this.closest(".view-row");
-            const password = row.querySelector(".password-text");
+    button.addEventListener("click", async function () {
 
-            // Use trimmed textContent to avoid mismatches caused by
-            // whitespace/newlines in the template markup. The initial
-            // indentation in the HTML can make password.textContent
-            // contain extra spaces so a direct equality check fails
-            // on the first click.
-            const current = password.textContent.trim();
+        const row = this.closest(".view-row");
+        const password = row.querySelector(".password-text");
 
-            if (current === "••••••••") {
+        const current = password.textContent.trim();
+//        10 seconds
+        const timer = 10 * 1000;
 
-                password.textContent = password.dataset.password;
-                this.textContent = "🙈";
+        if (current === "••••••••") {
 
-            } else {
+            const passwordId = password.dataset.passwordId;
+
+            const response = await fetch(`/get-password/${passwordId}`);
+
+            const data = await response.json();
+
+            password.textContent = data.password;
+            this.textContent = "🙈";
+
+            hideTimer = setTimeout(function () {
 
                 password.textContent = "••••••••";
-                this.textContent = "👁";
+                button.textContent = "👁";
 
-            }
+            }, timer);
 
-        });
+        } else {
 
+            password.textContent = "••••••••";
+            this.textContent = "👁";
+
+            clearTimeout(hideTimer);
+        }
     });
+});
 
 
     /* ==========================================
@@ -88,6 +99,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
+});
+
+
+document.querySelectorAll(".copy-password-btn").forEach(function (button) {
+
+    button.addEventListener("click", async function () {
+
+        const passwordId = this.dataset.passwordId;
+
+        const response = await fetch(`/get-password/${passwordId}`);
+
+        const data = await response.json();
+
+        await navigator.clipboard.writeText(data.password);
+
+        const original = this.textContent;
+
+        this.textContent = "✓";
+
+        setTimeout(function () {
+            button.textContent = original;
+        }, 1000);
+    });
 });
 
 

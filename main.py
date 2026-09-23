@@ -18,7 +18,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 # in minutes
-SESSION_TIMEOUT_TIMEPERIOD = 1
+SESSION_TIMEOUT_TIMEPERIOD = 3
 
 # Prevent JavaScript from reading the session cookie
 app.config['SESSION_COOKIE_HTTPONLY'] = True
@@ -279,6 +279,22 @@ def delete_password(password_id):
         return redirect(url_for('password_view', website_name=password.website))
     else:
         return redirect(url_for('dashboard'))
+
+
+@app.route("/get-password/<int:password_id>")
+@login_required
+def get_password(password_id):
+    password = db.session.get(Password, password_id)
+
+    if not password:
+        return {"error": "Password not found"}, 404
+
+    if password.user_id != current_user.id:
+        return {"error": "Unauthorized"}, 403
+
+    decrypted_password = decrypt_password(encrypted_text=password.password)
+
+    return {"password": decrypted_password}
 
 
 @app.route('/forget_password', methods=['GET', 'POST'])
