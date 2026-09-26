@@ -33,12 +33,12 @@
     <br>
 </form>
 {% if passwords %}
-{% for website, password in passwords.items() %}
+{% for website, num_of_acc in passwords.items() %}
 <div class="entry-grid">
     <a href="{{ url_for('password_view', website_name=website)}}" class="entry-card">
         <div class="entry-icon"></div>
         <div class="entry-info">
-            <h3>{{ website }} ({{ password|length }})</h3>
+            <h3>{{ website }} ({{ num_of_acc }})</h3>
         </div>
         <span class="entry-arrow">&rarr;</span>
     </a>
