@@ -1,16 +1,27 @@
+<!-- 
+    Password Manager - Home/Landing Page
+    Displays the initial landing page with introduction and navigation to login/register.
+    Shown to unauthenticated users before they log in.
+-->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Link to main stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
     <title>Password Manager</title>
 </head>
 
 <body>
+<!-- Main heading -->
 <h1>Password Manager</h1>
+
+<!-- Brief description of the application -->
 <p>Don't need to remember passwords. Your personal password manager to store passwords.</p>
+
+<!-- Navigation buttons for user actions -->
 <a href="{{url_for('register')}}" class="btn">Get Started</a>
 <a href="{{url_for('login')}}" class="btn">Login</a>
 

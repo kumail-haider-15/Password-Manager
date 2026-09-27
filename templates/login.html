@@ -1,16 +1,27 @@
+<!-- 
+    Password Manager - Login Page
+    Allows existing users to authenticate with their email and password.
+    Features password visibility toggle for better UX.
+-->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Link to main stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
     <title>Login</title>
 </head>
+
+<!-- Include JavaScript for password toggle functionality -->
 <script src="{{ url_for('static', filename='JS/script.js') }}"></script>
+
 <body>
+<!-- Page heading -->
 <h1>Login</h1>
 
+<!-- Display flash messages (errors, warnings, etc.) from backend -->
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 {% for message in messages %}
@@ -19,18 +30,26 @@
 {% endif %}
 {% endwith %}
 
+<!-- Login form: submits to the login route with POST method -->
 <form action="{{ url_for('login') }}" method="post">
+    <!-- Email input - retains value if validation fails -->
     <input type="email" placeholder="Enter email" name="email" value="{{ email or '' }}"><br>
 
-    <!-- Added wrapper and toggle button -->
+    <!-- Password input with visibility toggle -->
     <div class="password-wrapper">
         <input type="password" class="password" name="password" placeholder="Enter password">
+        <!-- Eye icon button to toggle password visibility (handled by script.js) -->
         <button type="button" class="toggle-input-password">👁</button>
     </div>
+
+    <!-- Link to password recovery page -->
     <a href="{{ url_for('forget_password') }}" class="forget-password">Forget Password?</a>
 
+    <!-- Submit button -->
     <button type="submit">Submit</button>
     <br>
+
+    <!-- Link to registration page for new users -->
     <a href="{{ url_for('register') }}">Don't have an account? Register here</a>
 </form>
 

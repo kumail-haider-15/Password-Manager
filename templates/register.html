@@ -1,16 +1,28 @@
+<!-- 
+    Password Manager - User Registration Page
+    Allows new users to create an account by providing name, email, and password.
+    Includes password confirmation and visibility toggle for better UX.
+    User must verify their email before gaining full access.
+-->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Link to main stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
     <title>Register</title>
 </head>
+
+<!-- Include JavaScript for password toggle functionality -->
 <script src="{{ url_for('static', filename='JS/script.js') }}"></script>
+
 <body>
+<!-- Page heading -->
 <h1>Register</h1>
 
+<!-- Display flash messages (errors, warnings, etc.) from backend -->
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 {% for message in messages %}
@@ -19,20 +31,34 @@
 {% endif %}
 {% endwith %}
 
+<!-- Registration form: submits to the register route with POST method -->
 <form action="{{ url_for('register') }}" method="post">
+    <!-- Username/Name input - retains value if validation fails -->
     <input type="text" placeholder="Enter your name" name="username" value="{{ username or '' }}"><br>
+
+    <!-- Email input - must be unique in the system -->
     <input type="email" placeholder="Enter email" name="email" value="{{ email or '' }}"><br>
+
+    <!-- Password input with visibility toggle -->
     <div class="password-wrapper">
         <input type="password" class="password" name="password" placeholder="Enter password">
+        <!-- Eye icon button to toggle password visibility (handled by script.js) -->
         <button type="button" class="toggle-input-password">👁</button>
     </div>
-    <!-- Added wrapper and toggle button -->
+
+    <!-- Password confirmation input with visibility toggle -->
+    <!-- Note: Both passwords must match to proceed -->
     <div class="password-wrapper">
         <input type="password" class="password" name="confirm_password" placeholder="Enter password">
+        <!-- Eye icon button to toggle password visibility (handled by script.js) -->
         <button type="button" class="toggle-input-password">👁</button>
     </div>
+
+    <!-- Submit button - validates all inputs on backend -->
     <button type="submit">Submit</button>
     <br>
+
+    <!-- Link to login page for existing users -->
     <a href="{{ url_for('login') }}">Already have an account? Login here</a>
 </form>
 

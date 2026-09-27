@@ -1,16 +1,31 @@
+<!-- 
+    Password Manager - Main Dashboard
+    Central hub for authenticated users to manage their saved passwords.
+    Features: Add new passwords, view grouped passwords by website, logout.
+    Also includes password generation functionality.
+-->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Link to main stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
     <title>Dashboard</title>
 </head>
+
+<!-- Include JavaScript for password generation and toggle functionality -->
 <script src="{{ url_for('static', filename='JS/script.js') }}"></script>
+
 <body>
+<!-- Page heading -->
 <h1>Dashboard</h1>
+
+<!-- Logout button with confirmation to prevent accidental logouts -->
 <a href="{{ url_for('logout') }}" class="btn" onclick="return confirm('Are you sure you want to logout?')">Logout</a>
+
+<!-- Display flash messages (errors, warnings, etc.) from backend -->
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 {% for message in messages %}
@@ -18,28 +33,48 @@
 {% endfor %}
 {% endif %}
 {% endwith %}
+
+<!-- Form to add new saved passwords -->
 <form action="{{ url_for('add_password') }}" method="post">
+    <!-- Website/service name input (capitalized on backend) -->
     <input type="text" name="website" placeholder="Enter website name" value="{{ website_name or '' }}"><br>
+
+    <!-- Username or email associated with the website account -->
     <input type="text" name="email_or_username" placeholder="Enter email or username"
            value="{{ email_or_username or '' }}"><br>
-    <!-- Added wrapper and toggle button -->
+
+    <!-- Password input with visibility toggle -->
     <div class="password-wrapper">
         <input type="password" class="password" name="password" placeholder="Enter password"
                value="{{ password or '' }}">
+        <!-- Eye icon button to toggle password visibility (handled by script.js) -->
         <button type="button" class="toggle-input-password">👁</button>
     </div>
+
+    <!-- Generate button creates a strong random password (handled by script.js) -->
     <button type="button" onclick="generatePassword()">Generate Password</button>
+
+    <!-- Submit button to save the password entry -->
     <button type="submit">Add Password</button>
     <br>
 </form>
+
+<!-- Display saved passwords grouped by website -->
 {% if passwords %}
+<!-- Loop through each website and count of passwords saved for it -->
 {% for website, num_of_acc in passwords.items() %}
 <div class="entry-grid">
+    <!-- Link to view all passwords for this website -->
     <a href="{{ url_for('password_view', website_name=website)}}" class="entry-card">
+        <!-- Icon placeholder for website -->
         <div class="entry-icon"></div>
+
+        <!-- Website name and account count (e.g., "Gmail (3)") -->
         <div class="entry-info">
             <h3>{{ website }} ({{ num_of_acc }})</h3>
         </div>
+
+        <!-- Arrow indicator for navigation -->
         <span class="entry-arrow">&rarr;</span>
     </a>
 </div>
@@ -49,4 +84,5 @@
 {% endif %}
 
 </body>
+
 </html>
