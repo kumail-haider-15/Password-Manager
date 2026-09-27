@@ -167,7 +167,7 @@ def register():
                             add_user(email=email, name=name, password=hash_password(password), date_time=datetime.now())
 
                             send_verification_email(email=email, s=s, mail=mail)
-                            return "We have send you an email, check your inbox and verify your email"
+                            return "We have send you an email, check your inbox and verify your email, if you find email in your inbox check spam"
 
                         elif not is_verified(email=email):
                             # If user exists but unverified, allow re-registration and resend email if 30+ minutes passed
@@ -257,7 +257,7 @@ def password_view(website_name):
             Password.user_id == current_user.id,
             Password.website == website_name
         )
-    ).scalars().all()
+    ).all()
 
     if passwords:
 
