@@ -1,4 +1,4 @@
-# 🔐 Password Manager
+# Password Manager
 
 A secure, full-stack password management web application built with **Python and Flask**. The project was developed to practice backend development, database management, authentication, authorization, cryptography, session management, and secure web-application design.
 
@@ -8,7 +8,7 @@ Users can create an account, verify their email, securely store website credenti
 
 ---
 
-## 📌 Overview
+## Overview
 
 The Flask Password Manager provides a centralized place for users to securely manage their website credentials.
 
@@ -21,7 +21,7 @@ The application also implements authentication, user-specific authorization, tim
 
 ---
 
-## ✨ Features
+## Features
 
 ### User Authentication
 
@@ -62,7 +62,7 @@ The application also implements authentication, user-specific authorization, tim
 
 ---
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 ### Backend
 
@@ -94,7 +94,7 @@ The application also implements authentication, user-specific authorization, tim
 
 ---
 
-## 🔐 Security Design
+## Security Design
 
 ### Account Passwords
 
@@ -222,7 +222,7 @@ The logout process clears the Flask-Login authentication state and session data.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 Password-Manager/
@@ -257,7 +257,7 @@ Password-Manager/
 
 ---
 
-## ⚙️ Installation
+## Installation
 
 ### 1. Clone the repository
 
@@ -294,7 +294,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🔑 Environment Variables
+## Environment Variables
 
 Create a `.env` file in the project root.
 
@@ -307,7 +307,7 @@ MY_EMAIL=your_email@example.com
 PASSWORD=your_email_app_password
 ```
 
-## ▶️ Running the Application
+## Running the Application
 
 Start the Flask application:
 
@@ -327,7 +327,7 @@ Replace `<PORT>` with the port configured in your application.
 
 ---
 
-## 🧪 Testing
+## Testing
 
 The application was tested through both normal user workflows and security-focused scenarios.
 
@@ -361,7 +361,7 @@ The application was tested through both normal user workflows and security-focus
 
 ---
 
-## 🔍 Important Security Considerations
+## Important Security Considerations
 
 This project is primarily a **learning and portfolio project** demonstrating secure application concepts.
 
@@ -384,7 +384,7 @@ These are natural next steps for taking the application beyond its current portf
 
 ---
 
-## 🧠 What I Learned
+## What I Learned
 
 This project helped me move from writing individual Python programs toward thinking about complete web applications.
 
@@ -408,7 +408,7 @@ Major learning areas included:
 
 ---
 
-## 🚧 Known Limitations
+## Known Limitations
 
 The application is intentionally scoped as a portfolio project.
 
@@ -420,7 +420,7 @@ Current limitations include:
 
 ---
 
-## 🔮 Future Improvements
+## Future Improvements
 
 Possible future improvements include:
 
@@ -438,12 +438,6 @@ Possible future improvements include:
 * Improved password-reveal security
 * Search and filtering for large password collections
 * Deployment to a cloud platform
-
----
-
-## 🌐 Live Demo
-
-**Live Demo:** `<ADD_DEPLOYED_APPLICATION_URL>`
 
 ---
 
